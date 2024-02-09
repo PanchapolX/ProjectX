@@ -6,6 +6,62 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  User_ID   Int      @id @default(autoincrement()) 
+  Username  String
+  Password  String
+  Email     String
+  Address   String
+
+  carts     Cart[]
+
+  orders    Order[]
+}
+
+
+model Cart {
+  Cart_ID     Int      @id @default(autoincrement())
+  User_ID     Int      
+  Product_ID  Int      
+  Quantity    Int
+  user        User     @relation(fields: [User_ID], references: [User_ID])
+  product     Product  @relation(fields: [Product_ID], references: [Product_ID])
+}
+
+model Order {
+  Order_ID         Int      @id @default(autoincrement()) 
+  User_ID          Int      
+  Order_Date       DateTime
+  Total_Price      Float
+  Status           String
+  Payment_Method   String
+  user             User     @relation(fields: [User_ID], references: [User_ID])
+  orderDetails     OrderDetail[]
+}
+
+
+model OrderDetail {
+  UniqueID    Int      @id @default(autoincrement())
+  Order_ID    Int      
+  Product_ID  Int      
+  Quantity    Int
+  Subtotal    Float
+
+  order       Order    @relation(fields: [Order_ID], references: [Order_ID])
+
+  product     Product  @relation(fields: [Product_ID], references: [Product_ID])
+}
+
+
+model Product {
+  Product_ID     Int      @id @default(autoincrement())
+  Name           String
+  Description    String
+  Price          Float
+  ImageURL       String
+  Tree_type      String
 }
